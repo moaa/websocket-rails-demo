@@ -1,0 +1,13 @@
+.row-fluid
+	.span12
+		.well#chat_history
+.row-fluid
+	.span12
+		%input#new_message{:type => 'text', :value => 'New message'}
+		%button#send_message Send Message
+
+.row-fluid
+	.span12
+		%h4 Set screen name
+		%input#screen_name{:type => 'text', :value => 'Anon'}
+		%button#set_name Submit!
