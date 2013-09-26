@@ -13,7 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require twitter/bootstrap
-//= require turbolinks
 //= require websocket_rails/main
 //= require bootstrap
 //= require chat_app

@@ -34,10 +34,11 @@
         .span2
           .well.sidebar-nav
             %ul.nav.nav-list
-              %li.nav-header Active Users
-              %li= link_to "Link 1", "/path1"
-              %li= link_to "Link 2", "/path2"
-              %li= link_to "Link 3", "/path3"
+              %li.nav-header Channels
+              %li
+              %li= link_to "Public", "#", :data => {:chan => "public"}, :class => "join_chan"
+              %li= link_to "Support", "#", :data => {:chan => "support"}, :class => "join_chan"
+              %li= link_to "Development", "#", :data => {:chan => "development"}, :class => "join_chan"
         .span10
           = bootstrap_flash
           = yield
