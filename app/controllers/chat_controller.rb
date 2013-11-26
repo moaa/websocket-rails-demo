@@ -6,8 +6,6 @@ class ChatController < WebsocketRails::BaseController
 	end
 
 	def incoming_message
-		WebsocketRails.users[current_user.id] = connection
-		screen_name = connection_store[:screen_name]
 		broadcast_message :new_message, {:user => current_user.screen_name, :text => message[:text]}
 	end
 

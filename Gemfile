@@ -45,7 +45,7 @@ end
 # gem 'debugger', group: [:development, :test]
 gem 'twitter-bootstrap-rails'
 gem 'haml-rails'
-gem 'websocket-rails'
+gem 'websocket-rails', path: '~/code/websocket-rails-rp'
 gem 'devise'
 gem 'pg'
 
