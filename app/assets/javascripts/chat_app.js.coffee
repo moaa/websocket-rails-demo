@@ -1,28 +1,62 @@
-$(document).ready ->
-  ws = new WebSocketRails('localhost:3000/websocket')
-  current_channel = undefined
-  username = undefined
-  ws.on_open = ->
-    console.log 'socket opened'
-    $('.join_chan').on 'click', (e) ->
-      ws.unsubscribe(current_channel.name) if current_channel
-      current_channel = ws.subscribe $(this).data('chan')
-      current_channel.bind 'incoming_message', (data) -> 
-        $('#chat_history').append('<br /><span>['+current_channel.name+'] '+data['user']+':</label> '+data['text'])
-      current_channel.bind 'subscriber_join', (data) ->
-        $('#chat_history').append('<br />'+data['email']+' has joined '+ current_channel.name)
-      console.log 'joining ' + $(this).data('chan')
-      ws.subscribe $(this).data('chan')
-      $('#chat_history').html('<b>You have joined '+current_channel.name)
-  ws.bind 'user_info', (data) -> 
-    username = data['user']
-  ws.bind 'new_message', (data) ->
-    console.log data
-    $('#chat_history').append('<br /><span>[broadcast] '+data['user']+':</label> '+data['text'])
+class @ChatApp
 
-  $('#send_message').on 'click', ->
-    if current_channel
-      current_channel.trigger 'incoming_message', {user: username, text: $('#new_message').val()}
+  messageTemplate: (message, channelName = 'broadcast') ->
+    """
+    <div>
+      <span>
+        <label class='label label-#{if channelName == 'broadcast' then 'warning' else 'info'}'>
+          [#{channelName}]
+        </label> #{message}
+      </span>
+    </div>
+    """
+  joinTemplate: (channelName) ->
+    """
+    <div>
+      <span>
+        <label class='label label-'>
+          [Joined Channel]
+        </label> #{channelName}
+      </span>
+    </div>
+    """
+
+  constructor: (@currentChannel = undefined, @username = undefined) ->
+    @dispatcher = new WebSocketRails(window.location.host + "/websocket")
+    @bindEvents()
+
+  bindEvents: ->
+    @dispatcher.bind 'user_info', @setUserInfo
+    @dispatcher.bind 'new_message', @receiveGlobalMessage
+    $('#send_message').click @sendMessage
+    $('.join_chan').click @joinChannel
+
+  setUserInfo: (userInfo) =>
+    @username = userInfo.user
+
+  receiveGlobalMessage: (message) =>
+    $('#chat_history').append @messageTemplate(message.text)
+
+  receiveMessage: (message) =>
+    $('#chat_history').append @messageTemplate(message.text, @currentChannel.name)
+
+  sendMessage: (e) =>
+    e.preventDefault()
+    message = $('#new_message').val()
+    if @currentChannel?
+      @currentChannel.trigger 'new_message', text: message, username: @username
     else
-      ws.trigger 'incoming_message', {text: $('#new_message').val()}
+      @dispatcher.trigger 'new_message', text: message, username: @username
     $('#new_message').val('')
+
+  joinChannel: (e) =>
+    e.preventDefault()
+    @dispatcher.unsubscribe(@currentChannel.name) if @currentChannel?
+
+    channelName = $(e.target).html()
+    @currentChannel = @dispatcher.subscribe(channelName)
+    @currentChannel.bind 'new_message', @receiveMessage
+    $('#chat_history').append @joinTemplate(channelName)
+
+$(document).ready ->
+  window.chatApp = new ChatApp

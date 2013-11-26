@@ -22,7 +22,7 @@ WebsocketRails.setup do |config|
   # * Requires Redis.
   config.synchronize = true
 
-  config.broadcast_subscriber_events = true
+  #config.broadcast_subscriber_events = true
 
   # Uncomment and edit to point to a different redis instance.
   # Will not be used unless standalone or synchronization mode
