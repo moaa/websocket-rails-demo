@@ -44,7 +44,8 @@ end
 # gem 'debugger', group: [:development, :test]
 gem 'twitter-bootstrap-rails'
 gem 'haml-rails'
-gem 'websocket-rails'
+gem 'websocket-rails', github: 'moaa/websocket-rails', branch: 'threadsocket-rails'
+gem 'websocket-rails-js', github: 'websocket-rails/websocket-rails-js', branch: 'sub_protocols'
 gem 'devise'
 gem 'pg'
 
