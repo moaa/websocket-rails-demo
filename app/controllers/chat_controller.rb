@@ -9,7 +9,4 @@ class ChatController < WebsocketRails::BaseController
 		broadcast_message :new_message, {:user => current_user.screen_name, :text => message[:text]}
 	end
 
-	def user_disconnected
-		p 'user disconnected'
-	end
 end

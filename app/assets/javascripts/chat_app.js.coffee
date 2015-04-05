@@ -30,7 +30,7 @@ class @ChatApp
     @dispatcher.bind 'new_message', @receiveGlobalMessage
     $('#send_message').click @sendMessage
     $('.join_chan').click @joinChannel
-
+    
   setUserInfo: (userInfo) =>
     @username = userInfo.user
 
@@ -51,12 +51,17 @@ class @ChatApp
 
   joinChannel: (e) =>
     e.preventDefault()
-    @dispatcher.unsubscribe(@currentChannel.name) if @currentChannel?
-
-    channelName = $(e.target).html()
-    @currentChannel = @dispatcher.subscribe(channelName)
-    @currentChannel.bind 'new_message', @receiveMessage
-    $('#chat_history').append @joinTemplate(channelName)
-
+    if @currentChannel?
+      @currentChannel.trigger 'user_disconnected', username: @username
+      @dispatcher.unsubscribe(@currentChannel.name)
+      @currentChannel = undefined
+    else
+     channelName = $(e.target).html()
+     @currentChannel = @dispatcher.subscribe(channelName)
+     @currentChannel.bind 'new_message', @receiveMessage
+     $('#chat_history').append @joinTemplate(channelName)
+     
+     @currentChannel.bind 'user_disconnected', (data) =>
+       $("#chat_history").append @messageTemplate " User #{data.username} disconnected", @currentChannel.name
 $(document).ready ->
   window.chatApp = new ChatApp
